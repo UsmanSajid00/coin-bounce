@@ -1,0 +1,18 @@
+import mongoose from "mongoose";
+const { Schema } = mongoose;
+
+const blogSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    photoPath: { type: String, required: true },
+    author: { type: mongoose.SchemaType.ObjectId, ref: "users" },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const Blog = mongoose.model("blog", blogSchema, "blogs");
+
+export default Blog;
