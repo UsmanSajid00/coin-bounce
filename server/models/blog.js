@@ -13,6 +13,6 @@ const blogSchema = new Schema(
   }
 );
 
-const Blog = mongoose.model("blog", blogSchema, "blogs");
+const Blog = mongoose.model("Blog", blogSchema, "blogs");
 
 export default Blog;
