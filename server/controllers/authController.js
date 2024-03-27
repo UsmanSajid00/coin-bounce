@@ -1,6 +1,7 @@
 import Joi from "joi";
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
+import UserDto from "../dto/user.js";
 
 const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,25}$/;
 const authController = {
@@ -46,10 +47,44 @@ const authController = {
     });
 
     const user = await userToRegister.save();
-    return res.status(200).json({ user });
+    const userDto = new UserDto(user);
+    return res.status(200).json({ user: userDto });
   },
 
-  async login() {},
+  async login(req, res, next) {
+    const userLoginSchema = Joi.object({
+      username: Joi.string().min(5).max(30).required(),
+      password: Joi.string().pattern(passwordPattern).required(),
+    });
+    const { error } = userLoginSchema.validate(req.body);
+    if (error) {
+      return next(error);
+    }
+    const { username, password } = req.body;
+    let user;
+    try {
+      user = await User.findOne({ username });
+      if (!user) {
+        const error = {
+          status: 401,
+          message: "Invalid username or password",
+        };
+        return next(error);
+      }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        const error = {
+          status: 401,
+          message: "Invalid username or password",
+        };
+        return next(error);
+      }
+    } catch (error) {
+      return next(error);
+    }
+    const userDto = new UserDto(user);
+    return res.status(200).json({ user: userDto });
+  },
 
   async logout() {},
 
