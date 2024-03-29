@@ -3,8 +3,11 @@ import dbConnect from "./databse/index.js";
 import { PORT } from "./config/index.js"; // Assuming PORT is exported as named export
 import router from "./routes/index.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
+
+app.use(cookieParser());
 
 app.use(express.json());
 
