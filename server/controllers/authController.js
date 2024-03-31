@@ -179,7 +179,21 @@ const authController = {
     try {
       const accessToken = JWTService.signAccessToken({ _id: id }, "30m");
       const refreshToken = JWTService.signRefreshToken({ _id: id }, "60m");
-    } catch (error) {}
+      await RefreshToken.updateOne({ _id: id }, { token: refreshToken });
+      res.cookie("accessToken", accessToken, {
+        maxAge: 1000 * 60 * 60 * 24,
+        httpOnly: true,
+      });
+      res.cookie("refreshToken", refreshToken, {
+        maxAge: 1000 * 60 * 60 * 24,
+        httpOnly: true,
+      });
+    } catch (error) {
+      return next(error);
+    }
+    const user = await User.findOne({ _id: id });
+    const userDto = new UserDto(user);
+    res.status(200).json({ user: userDto, auth: true });
   },
 };
 

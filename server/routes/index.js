@@ -1,29 +1,22 @@
 import express from "express";
 import authController from "../controllers/authController.js";
+import blogController from "../controllers/blogController.js";
 import auth from "../middlewares/auth.js";
 
 const router = express.Router();
 
-//user
-//register
+//user authentication routes
 router.post("/register", authController.register);
-
-//login
 router.post("/login", authController.login);
-
-//logout
 router.post("/logout", auth, authController.logout);
+router.get("/refresh", authController.refresh);
 
-//refresh
-router.post("/refresh", authController.refresh);
-
-//blog
-//crud
-//create
-//read all blog
-//read blogs by Id
-//update
-//delete
+//blog routes
+router.post("/blog", auth, blogController.create);
+router.get("/blog/all", auth, blogController.getAll);
+router.get("/blog/:id", auth, blogController.getById);
+router.put("/blog", auth, blogController.update);
+router.delete("/blog", auth, blogController.delete);
 
 //comment
 // create comment
