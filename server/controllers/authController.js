@@ -149,7 +149,38 @@ const authController = {
     res.status(200).json({ user: null, auth: false });
   },
 
-  async refresh() {},
+  async refresh(req, res, next) {
+    const originalRefreshToken = req.cookies.refreshToken;
+    let id;
+    try {
+      id = JWTService.verifyRefreshToken(originalRefreshToken)._id;
+    } catch (e) {
+      const error = {
+        status: 401,
+        message: "Unauthorized",
+      };
+      return next(error);
+    }
+    try {
+      const match = RefreshToken.findOne({
+        _id: id,
+        token: originalRefreshToken,
+      });
+      if (!match) {
+        const error = {
+          status: 401,
+          message: "Unauthorized",
+        };
+        return next(error);
+      }
+    } catch (error) {
+      return next(error);
+    }
+    try {
+      const accessToken = JWTService.signAccessToken({ _id: id }, "30m");
+      const refreshToken = JWTService.signRefreshToken({ _id: id }, "60m");
+    } catch (error) {}
+  },
 };
 
 export default authController;
