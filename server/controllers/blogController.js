@@ -19,30 +19,33 @@ const blogController = {
       return next(error);
     }
     const { title, author, content, photo } = req.body;
+    //read as buffer
     const buffer = Buffer.from(
       photo.replace(/^data:image\/(png|jpg|jpeg);base64,/, ""),
       "base64"
     );
-    const imagePath = `${Date.now()}-${author}`;
+    const imagePath = `${Date.now()}-${author}.png`;
+    // save locally
     try {
-      fs.writeFileSync("storage/${imagePath}", buffer);
+      fs.writeFileSync(`storage/${imagePath}`, buffer);
     } catch (error) {
       return next(error);
     }
+    //save blog in DB
     let newBlog;
     try {
       newBlog = new Blog({
         title,
         author,
         content,
-        photo: `${BACKEND_SERVER_PATH}/storage/${imagePath}`,
+        photoPath: `${BACKEND_SERVER_PATH}/storage/${imagePath}`,
       });
       await newBlog.save();
     } catch (error) {
       return next(error);
     }
     const blogDto = new BlogDto(newBlog);
-    res.status(201).json({ blog: blogDto });
+    return res.status(201).json({ blog: blogDto });
   },
   async getAll(req, res, next) {},
   async getById(req, res, next) {},
