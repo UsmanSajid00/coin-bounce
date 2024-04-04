@@ -1,7 +1,11 @@
 import Joi from "joi";
 import fs from "fs";
+import Blog from "../models/blog.js";
+import BlogDto from "../dto/blog.js";
+import { BACKEND_SERVER_PATH } from "../config/index.js";
 
 const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
+
 const blogController = {
   async create(req, res, next) {
     const createBlogSchema = Joi.object({
@@ -16,13 +20,29 @@ const blogController = {
     }
     const { title, author, content, photo } = req.body;
     const buffer = Buffer.from(
-      photo.replaced(/^data:image\/(png|jpg|jpeg);base64,/, ""),
+      photo.replace(/^data:image\/(png|jpg|jpeg);base64,/, ""),
       "base64"
     );
     const imagePath = `${Date.now()}-${author}`;
     try {
-      fs.writeFileSync("storages/${imagePath}", buffer);
-    } catch (error) {}
+      fs.writeFileSync("storage/${imagePath}", buffer);
+    } catch (error) {
+      return next(error);
+    }
+    let newBlog;
+    try {
+      newBlog = new Blog({
+        title,
+        author,
+        content,
+        photo: `${BACKEND_SERVER_PATH}/storage/${imagePath}`,
+      });
+      await newBlog.save();
+    } catch (error) {
+      return next(error);
+    }
+    const blogDto = new BlogDto(newBlog);
+    res.status(201).json({ blog: blogDto });
   },
   async getAll(req, res, next) {},
   async getById(req, res, next) {},
