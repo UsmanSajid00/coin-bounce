@@ -1,8 +1,9 @@
 class BlogBDto {
   constructor(blog) {
-    this.author = blog.author;
-    this.content = blog.content;
+    this._id = blog._id;
     this.title = blog.title;
+    this.content = blog.content;
+    this.author = blog.author;
     this.photo = blog.photoPath;
   }
 }

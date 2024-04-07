@@ -2,6 +2,7 @@ import Joi from "joi";
 import fs from "fs";
 import Blog from "../models/blog.js";
 import BlogDto from "../dto/blog.js";
+import BlogDetailsDto from "../dto/blogDetails.js";
 import { BACKEND_SERVER_PATH } from "../config/index.js";
 
 const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
@@ -60,7 +61,28 @@ const blogController = {
       return next(error);
     }
   },
-  async getById(req, res, next) {},
+  async getById(req, res, next) {
+    const getByIdSchema = Joi.object({
+      id: Joi.string().regex(mongodbIdPattern).required(),
+    });
+    const { error } = getByIdSchema.validate(req.params);
+    if (error) {
+      return next(error);
+    }
+
+    const { id } = req.params;
+    try {
+      const blog = await Blog.findOne({ _id: id }).populate("author");
+      if (!blog) {
+        return res.status(404).json({ message: "Blog not found" });
+      }
+
+      const blogDto = new BlogDetailsDto(blog);
+      return res.status(200).json({ blog: blogDto });
+    } catch (error) {
+      return next(error);
+    }
+  },
   async update(req, res, next) {},
   async delete(req, res, next) {},
 };
