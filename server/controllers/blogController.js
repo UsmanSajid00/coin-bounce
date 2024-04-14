@@ -83,7 +83,73 @@ const blogController = {
       return next(error);
     }
   },
-  async update(req, res, next) {},
-  async delete(req, res, next) {},
+  async update(req, res, next) {
+    const updateBlogSchema = Joi.object({
+      title: Joi.string(),
+      content: Joi.string(),
+      author: Joi.string().regex(mongodbIdPattern).required(),
+      blogId: Joi.string().regex(mongodbIdPattern).required(),
+      photo: Joi.string(),
+    });
+    const { error } = updateBlogSchema.validate(req.body);
+    if (error) return res.status(400).json(error);
+
+    const { title, content, author, blogId, photo } = req.body;
+
+    let blog;
+    try {
+      blog = await Blog.findOne({ _id: blogId });
+    } catch (error) {
+      return next(error);
+    }
+
+    if (photo) {
+      let previousPhoto = blog.photoPath;
+      if (previousPhoto) {
+        previousPhoto = previousPhoto.split("/").at(-1);
+        fs.unlinkSync(`storage/${previousPhoto}`);
+      }
+      // read as buffer
+      const buffer = Buffer.from(
+        photo.replace(/^data:image\/(png|jpg|jpeg);base64,/, ""),
+        "base64"
+      );
+      const imagePath = `${Date.now()}-${author}.png`;
+      // save locally
+      try {
+        fs.writeFileSync(`storage/${imagePath}`, buffer);
+      } catch (error) {
+        return next(error);
+      }
+
+      await Blog.updateOne(
+        { _id: blogId },
+        {
+          title,
+          content,
+          photoPath: `${BACKEND_SERVER_PATH}/storage/${imagePath}`,
+        }
+      );
+    } else {
+      await Blog.updateOne(
+        { _id: blogId },
+        {
+          title,
+          content,
+        }
+      );
+    }
+    return res.status(200).json({ message: "Blog updated successfully" });
+  },
+  async delete(req, res, next) {
+    const deleteBlogSchema = Joi.object({
+      id: Joi.string().regex(mongodbIdPattern).required(),
+    });
+    const { error } = deleteBlogSchema.validate(req.params);
+    if (error) {
+      return next(error);
+    }
+    const { id } = req.params;
+  },
 };
 export default blogController;
