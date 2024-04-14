@@ -1,6 +1,7 @@
 import Joi from "joi";
 import fs from "fs";
 import Blog from "../models/blog.js";
+import Comment from "../models/comment.js";
 import BlogDto from "../dto/blog.js";
 import BlogDetailsDto from "../dto/blogDetails.js";
 import { BACKEND_SERVER_PATH } from "../config/index.js";
@@ -150,6 +151,13 @@ const blogController = {
       return next(error);
     }
     const { id } = req.params;
+    try {
+      await Blog.deleteOne({ _id: id });
+      await Comment.deleteMany({ blog: id });
+    } catch (error) {
+      return next(error);
+    }
+    res.status(200).json({ message: "Blog deleted successfully" });
   },
 };
 export default blogController;

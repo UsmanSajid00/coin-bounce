@@ -68,7 +68,6 @@ const authController = {
       next(error);
     }
   },
-
   async login(req, res, next) {
     const userLoginSchema = Joi.object({
       username: Joi.string().min(5).max(30).required(),
@@ -135,7 +134,6 @@ const authController = {
       return next(error);
     }
   },
-
   async logout(req, res, next) {
     const { refreshToken } = req.cookies;
 
@@ -148,7 +146,6 @@ const authController = {
     }
     res.status(200).json({ user: null, auth: false });
   },
-
   async refresh(req, res, next) {
     const originalRefreshToken = req.cookies.refreshToken;
     let id;
