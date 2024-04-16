@@ -1,7 +1,6 @@
 import Joi from "joi";
 import Comment from "../models/comment.js";
 import commentDTO from "../dto/comment.js";
-import { populate } from "dotenv";
 
 const mongodbIdPattern = /^[0-9a-fA-F]{24}$/;
 
