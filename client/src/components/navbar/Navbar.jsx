@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import styles from "./Navbar.module.css";
 
 const Navbar = () => {
+  const isAuthenticated = false;
   return (
     <>
       <nav className={styles.navbar}>
@@ -41,24 +42,34 @@ const Navbar = () => {
         >
           Submit a Blog
         </NavLink>
-        <NavLink
-          to="log-in"
-          className={({ isActive }) =>
-            isActive ? styles.activeStyle : styles.inActiveStyle
-          }
-        >
-          <button className={styles.logInButton}>Log In</button>
-        </NavLink>
-        <NavLink
-          to="sign-up"
-          className={({ isActive }) =>
-            isActive ? styles.activeStyle : styles.inActiveStyle
-          }
-        >
-          <button className={styles.signUpButton}>Sign Up</button>
-        </NavLink>
+        {isAuthenticated ? (
+          <div>
+            <NavLink>
+              <button className={styles.signOutButton}>Sign out</button>
+            </NavLink>
+          </div>
+        ) : (
+          <div>
+            <NavLink
+              to="login"
+              className={({ isActive }) =>
+                isActive ? styles.activeStyle : styles.inActiveStyle
+              }
+            >
+              <button className={styles.logInButton}>Log In</button>
+            </NavLink>
+            <NavLink
+              to="signup"
+              className={({ isActive }) =>
+                isActive ? styles.activeStyle : styles.inActiveStyle
+              }
+            >
+              <button className={styles.signUpButton}>Sign Up</button>
+            </NavLink>
+          </div>
+        )}
       </nav>
-      <div></div>
+      <div className={styles.saperator}></div>
     </>
   );
 };

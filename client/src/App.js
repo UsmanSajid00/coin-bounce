@@ -2,11 +2,14 @@ import React from "react";
 import Home from "./pages/Home/Home";
 import Footer from "./components/footer/Footer";
 import Navbar from "./components/navbar/Navbar";
+import Error from "./pages/Error/Error";
 import styles from "./App.module.css";
+import ProtectedRoute from "./components/protectedRoute/ProtectedRoute";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const App = () => {
+  const isAuth = false;
   return (
     <div className={styles.container}>
       <BrowserRouter>
@@ -27,21 +30,38 @@ const App = () => {
             />
             <Route
               path="/blogs"
-              element={<div className={styles.main}>Blogs</div>}
+              element={
+                <ProtectedRoute isAuth={isAuth}>
+                  <div className={styles.main}>Blogs</div>
+                </ProtectedRoute>
+              }
             />
             <Route
               path="/submit"
-              element={<div className={styles.main}>Submit a Blog</div>}
+              element={
+                <ProtectedRoute isAuth={isAuth}>
+                  <div className={styles.main}>Submit a Blog</div>
+                </ProtectedRoute>
+              }
             />
             <Route
-              path="/log-in"
+              path="/login"
               element={<div className={styles.main}>Login</div>}
             />
             <Route
-              path="/sign-up"
+              path="/signup"
               element={<div className={styles.main}>SignUp</div>}
             />
+            <Route
+              path="*"
+              element={
+                <div className={styles.main}>
+                  <Error />
+                </div>
+              }
+            />
           </Routes>
+
           <Footer />
         </div>
       </BrowserRouter>
