@@ -1,12 +1,13 @@
 import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Home from "./pages/Home/Home";
 import Footer from "./components/footer/Footer";
 import Navbar from "./components/navbar/Navbar";
+import Login from "./pages/Login/Login";
 import Error from "./pages/Error/Error";
 import styles from "./App.module.css";
 import ProtectedRoute from "./components/protectedRoute/ProtectedRoute";
-
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const App = () => {
   const isAuth = false;
@@ -46,7 +47,11 @@ const App = () => {
             />
             <Route
               path="/login"
-              element={<div className={styles.main}>Login</div>}
+              element={
+                <div className={styles.main}>
+                  <Login />
+                </div>
+              }
             />
             <Route
               path="/signup"
