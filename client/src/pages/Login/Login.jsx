@@ -38,6 +38,7 @@ const Login = () => {
       setError(response.response.data.message);
     }
   };
+
   const { values, touched, handleBlur, handleChange, errors } = useFormik({
     initialValues: {
       username: "",
@@ -69,7 +70,16 @@ const Login = () => {
         error={errors.password && touched.password ? 1 : undefined}
         errormessage={errors.password}
       />
-      <button className={styles.logInButton} onClick={handleLogin}>
+      <button
+        disabled={
+          !values.username ||
+          !values.password ||
+          errors.username ||
+          errors.password
+        }
+        className={styles.logInButton}
+        onClick={handleLogin}
+      >
         Log In
       </button>
       <span>
@@ -78,6 +88,7 @@ const Login = () => {
           Register Here
         </button>
       </span>
+      {error !== " " ? <p className={styles.errorMessage}>{error}</p> : ""}
     </div>
   );
 };
